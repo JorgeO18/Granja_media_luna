@@ -1,0 +1,71 @@
+.page-header {
+    background: linear-gradient(135deg, var(--primary-green), var(--secondary-green));
+    color: var(--white);
+    padding: var(--spacing-xl) 0;
+    margin-bottom: var(--spacing-xl);
+}
+
+.page-header h1 {
+    font-size: var(--font-size-3xl);
+}
+
+.products-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var(--spacing-md);
+}
+
+.products-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-xl);
+}
+
+.search-box input {
+    padding: var(--spacing-sm) var(--spacing-md);
+    border: 2px solid var(--light-green);
+    border-radius: var(--border-radius);
+    width: 300px;
+}
+
+/* 🎨 Estilos de tarjetas de productos */
+.products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: var(--spacing-lg);
+}
+
+.product-card {
+    background: white;
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-md);
+    transition: all 0.3s ease;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+}
+
+.product-header {
+    background: linear-gradient(135deg, var(--primary-green), var(--secondary-green));
+    color: white;
+    text-align: center;
+    padding: var(--spacing-lg);
+}
+
+.product-body {
+    padding: var(--spacing-lg);
+    text-align: center;
+}
+
+.product-price {
+    font-weight: 700;
+    color: var(--brown);
+}
+
+.no-products {
+    text-align: center;
+    padding: var(--spacing-2xl);
+}

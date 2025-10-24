@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro - Granja Media Luna</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container">
+            <a href="index.html" class="nav-logo">
+                <i class="fas fa-egg"></i>
+                Granja Media Luna
+            </a>
+            <div class="nav-links">
+                <a href="index.html">Inicio</a>
+                <a href="login.html">Iniciar Sesión</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Contenedor principal -->
+    <div class="container" style="min-height: 70vh; display: flex; align-items: center; justify-content: center; padding: 2rem 0;">
+        <div class="form-container" style="max-width: 500px; width: 100%;">
+            <div class="text-center" style="margin-bottom: 2rem;">
+                <i class="fas fa-user-plus" style="font-size: 3rem; color: var(--primary-green); margin-bottom: 1rem;"></i>
+                <h1 style="color: var(--primary-green); margin-bottom: 0.5rem;">Registro de Usuario</h1>
+                <p style="color: var(--gray);">Crea tu cuenta en el sistema</p>
+            </div>
+            
+            <form id="registroForm" data-validate>
+                <div class="form-group">
+                    <label for="nombre" class="form-label">Nombre Completo *</label>
+                    <input type="text" id="nombre" name="nombre" class="form-control" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="correo" class="form-label">Correo Electrónico *</label>
+                    <input type="email" id="correo" name="correo" class="form-control" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="contrasena" class="form-label">Contraseña *</label>
+                    <input type="password" id="contrasena" name="contrasena" class="form-control" required minlength="4">
+                    <small style="color: var(--gray); font-size: 0.85rem;">Mínimo 4 caracteres</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmar_contrasena" class="form-label">Confirmar Contraseña *</label>
+                    <input type="password" id="confirmar_contrasena" name="confirmar_contrasena" class="form-control" required minlength="4">
+                </div>
+
+                <div class="form-group">
+                    <label for="rol" class="form-label">Tipo de Usuario *</label>
+                    <select id="rol" name="rol" class="form-control" required>
+                        <option value="empleado">Empleado</option>
+                        <option value="admin">Administrador</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%;">
+                    <i class="fas fa-user-plus"></i> Registrarse
+                </button>
+            </form>
+
+            <div class="text-center" style="margin-top: 2rem;">
+                <p style="color: var(--gray); font-size: 0.9rem;">
+                    ¿Ya tienes una cuenta? 
+                    <a href="login.html" style="color: var(--primary-green); text-decoration: none; font-weight: bold;">
+                        Iniciar Sesión
+                    </a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>&copy; 2025 Granja Media Luna. Todos los derechos reservados.</p>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script src="js/registro.js"></script>
+</body>
+</html>
+
+

@@ -1,0 +1,228 @@
+ <!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Granja Media Luna - Comercialización de Huevos</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="nav-logo">
+                    <i class="fas fa-egg"></i>
+                    <span>Granja Media Luna</span>
+                </div>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="index.html" class="nav-link active">Inicio</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="catalogo.html" class="nav-link">Catálogo</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="contacto.html" class="nav-link">Contacto</a>
+                    </li>
+                    <!-- Enlaces solo para administradores (se muestran al estar logueado) -->
+                    <li class="nav-item admin-only" style="display: none;">
+                        <a href="productos.html" class="nav-link">Gestión Productos</a>
+                    </li>
+                    <li class="nav-item admin-only" style="display: none;">
+                        <a href="clientes.html" class="nav-link">Gestión Clientes</a>
+                    </li>
+                    <li class="nav-item admin-only" style="display: none;">
+                        <a href="ventas.html" class="nav-link">Ventas</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="login.html" class="nav-link login-btn" id="loginLink">
+                            <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+                        </a>
+                        <a href="#" class="nav-link login-btn" id="logoutLink" onclick="logout()" style="display: none;">
+                            <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                        </a>
+                    </li>
+                    <li class="nav-item" id="userInfo" style="display: none;">
+                        <span class="nav-link" style="color: var(--accent-yellow);">
+                            <i class="fas fa-user"></i> <span id="userName"></span>
+                        </span>
+                    </li>
+                </ul>
+                <div class="nav-toggle">
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <main class="main">
+        <section class="hero">
+            <div class="hero-content">
+                <h1 class="hero-title">Bienvenidos a Granja Media Luna</h1>
+                <p class="hero-subtitle">Huevos frescos y de calidad para toda la familia</p>
+                <p class="hero-description">
+                    Somos una granja dedicada a la producción y comercialización de huevos frescos, 
+                    criados con los más altos estándares de calidad y cuidado animal.
+                </p>
+                <div class="hero-buttons">
+                    <a href="catalogo.html" class="btn btn-primary">Ver Catálogo</a>
+                    <a href="contacto.html" class="btn btn-secondary">Contactanos</a>
+                </div>
+            </div>
+            <div class="hero-image">
+                <div class="farm-icon">
+                    <i class="fas fa-home"></i>
+                    <i class="fas fa-egg"></i>
+                    <i class="fas fa-seedling"></i>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section class="features">
+            <div class="container">
+                <h2 class="section-title">¿Por qué elegir nuestros huevos?</h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-leaf"></i>
+                        </div>
+                        <h3>100% Naturales</h3>
+                        <p>Huevos frescos de gallinas criadas en ambiente natural, sin químicos ni conservantes.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                        <h3>Cuidado Animal</h3>
+                        <p>Nuestras gallinas reciben el mejor cuidado y atención veterinaria especializada.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-truck"></i>
+                        </div>
+                        <h3>Entrega Rápida</h3>
+                        <p>Servicio de entrega a domicilio para garantizar la frescura de nuestros productos.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-medal"></i>
+                        </div>
+                        <h3>Calidad Certificada</h3>
+                        <p>Productos certificados que cumplen con los más altos estándares de calidad.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Products Preview -->
+        <section class="products-preview">
+            <div class="container">
+                <h2 class="section-title">Nuestros Productos</h2>
+                <div class="products-grid">
+                    <div class="product-card">
+                        <div class="product-icon">
+                            <i class="fas fa-egg"></i>
+                        </div>
+                        <h3>Huevos Blancos</h3>
+                        <p>Huevos frescos de gallinas blancas, ideales para uso diario.</p>
+                        <span class="price">Desde $350</span>
+                    </div>
+                    <div class="product-card">
+                        <div class="product-icon">
+                            <i class="fas fa-egg"></i>
+                        </div>
+                        <h3>Huevos Criollos</h3>
+                        <p>Huevos de gallinas criadas en campo, sabor tradicional.</p>
+                        <span class="price">Desde $400</span>
+                    </div>
+                    <div class="product-card">
+                        <div class="product-icon">
+                            <i class="fas fa-egg"></i>
+                        </div>
+                        <h3>Huevos Orgánicos</h3>
+                        <p>Huevos certificados orgánicos, libres de químicos.</p>
+                        <span class="price">Desde $600</span>
+                    </div>
+                </div>
+                <div class="text-center">
+                    <a href="catalogo.html" class="btn btn-primary">Ver Catálogo Completo</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats Section -->
+        <section class="stats">
+            <div class="container">
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-number">500+</div>
+                        <div class="stat-label">Huevos Diarios</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">150+</div>
+                        <div class="stat-label">Clientes Satisfechos</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">5+</div>
+                        <div class="stat-label">Años de Experiencia</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">100%</div>
+                        <div class="stat-label">Satisfacción</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Granja Media Luna</h3>
+                    <p>Dedicados a la producción de huevos frescos y de calidad para toda la familia.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-whatsapp"></i></a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h3>Enlaces Rápidos</h3>
+                    <ul>
+                        <li><a href="productos.html">Productos</a></li>
+                        <li><a href="clientes.html">Clientes</a></li>
+                        <li><a href="ventas.html">Ventas</a></li>
+                        <li><a href="contacto.html">Contacto</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Contacto</h3>
+                    <p><i class="fas fa-map-marker-alt"></i> Vereda Media Luna, Municipio</p>
+                    <p><i class="fas fa-phone"></i> (300) 123-4567</p>
+                    <p><i class="fas fa-envelope"></i> info@granjamedialuna.com</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Granja Media Luna. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script>
+        // Actualizar UI de sesión al cargar la página
+        document.addEventListener('DOMContentLoaded', function() {
+            updateSessionUI();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Clientes - Granja Media Luna</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="nav-logo">
+                    <i class="fas fa-egg"></i>
+                    <span>Granja Media Luna</span>
+                </div>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="index.html" class="nav-link">Inicio</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="catalogo.html" class="nav-link">Catálogo</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="contacto.html" class="nav-link">Contacto</a>
+                    </li>
+                    <!-- Enlaces solo para usuarios logueados -->
+                    <li class="nav-item admin-only" style="display: none;">
+                        <a href="productos.html" class="nav-link">Gestión Productos</a>
+                    </li>
+                    <li class="nav-item admin-only" style="display: none;">
+                        <a href="clientes.html" class="nav-link active">Gestión Clientes</a>
+                    </li>
+                    <li class="nav-item admin-only" style="display: none;">
+                        <a href="ventas.html" class="nav-link">Ventas</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="login.html" class="nav-link login-btn" id="loginLink">
+                            <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+                        </a>
+                        <a href="#" class="nav-link login-btn" id="logoutLink" onclick="logout()" style="display: none;">
+                            <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                        </a>
+                    </li>
+                    <li class="nav-item" id="userInfo" style="display: none;">
+                        <span class="nav-link" style="color: var(--accent-yellow);">
+                            <i class="fas fa-user"></i> <span id="userName"></span>
+                        </span>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Encabezado de Página -->
+    <div class="page-header">
+        <div class="container">
+            <h1><i class="fas fa-users"></i> Gestión de Clientes</h1>
+            <p>Administra la información de tus clientes</p>
+        </div>
+    </div>
+
+    <!-- Contenedor principal -->
+    <div class="container">
+        <div class="form-container">
+            <h2>Agregar Nuevo Cliente</h2>
+            <form id="clienteForm" data-validate>
+                <div class="form-group">
+                    <label for="nombre" class="form-label">Nombre Completo *</label>
+                    <input type="text" id="nombre" name="nombre" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="telefono" class="form-label">Teléfono *</label>
+                    <input type="tel" id="telefono" name="telefono" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="correo" class="form-label">Correo Electrónico</label>
+                    <input type="email" id="correo" name="correo" class="form-control">
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Agregar Cliente
+                </button>
+            </form>
+        </div>
+
+        <div class="table-container">
+            <h2>Lista de Clientes</h2>
+            <table class="table" id="clientesTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Teléfono</th>
+                        <th>Correo</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td colspan="5" class="text-center">Cargando clientes...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modal para editar cliente -->
+    <div id="modalEditarCliente" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Editar Cliente</h2>
+                <span class="modal-close" onclick="cerrarModalEditarCliente()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="editarClienteForm" data-validate>
+                    <input type="hidden" id="edit_cliente_id" name="id">
+                    <div class="form-group">
+                        <label for="edit_cliente_nombre" class="form-label">Nombre Completo: *</label>
+                        <input type="text" id="edit_cliente_nombre" name="nombre" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit_cliente_telefono" class="form-label">Teléfono: *</label>
+                        <input type="tel" id="edit_cliente_telefono" name="telefono" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit_cliente_correo" class="form-label">Correo Electrónico:</label>
+                        <input type="email" id="edit_cliente_correo" name="correo" class="form-control">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" onclick="cerrarModalEditarCliente()">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Guardar Cambios
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>&copy; 2025 Granja Media Luna. Todos los derechos reservados.</p>
+    </footer>
+
+    <!-- 🔐 Protección de sesión - DEBE IR PRIMERO -->
+    <script src="js/session_guard.js"></script>
+    
+    <script src="js/main.js"></script>
+    <script src="js/clientes.js"></script>
+    <script>
+        // Actualizar UI de sesión al cargar la página
+        document.addEventListener('DOMContentLoaded', function() {
+            updateSessionUI();
+        });
+    </script>
+</body>
+</html>

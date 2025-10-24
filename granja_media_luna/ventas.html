@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Ventas - Granja Media Luna</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="nav-logo">
+                    <i class="fas fa-egg"></i>
+                    <span>Granja Media Luna</span>
+                </div>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="index.html" class="nav-link">Inicio</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="catalogo.html" class="nav-link">Catálogo</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="contacto.html" class="nav-link">Contacto</a>
+                    </li>
+                    <!-- Enlaces solo para usuarios logueados -->
+                    <li class="nav-item admin-only" style="display: none;">
+                        <a href="productos.html" class="nav-link">Gestión Productos</a>
+                    </li>
+                    <li class="nav-item admin-only" style="display: none;">
+                        <a href="clientes.html" class="nav-link">Gestión Clientes</a>
+                    </li>
+                    <li class="nav-item admin-only" style="display: none;">
+                        <a href="ventas.html" class="nav-link active">Ventas</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="login.html" class="nav-link login-btn" id="loginLink">
+                            <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+                        </a>
+                        <a href="#" class="nav-link login-btn" id="logoutLink" onclick="logout()" style="display: none;">
+                            <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                        </a>
+                    </li>
+                    <li class="nav-item" id="userInfo" style="display: none;">
+                        <span class="nav-link" style="color: var(--accent-yellow);">
+                            <i class="fas fa-user"></i> <span id="userName"></span>
+                        </span>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Encabezado de Página -->
+    <div class="page-header">
+        <div class="container">
+            <h1><i class="fas fa-shopping-cart"></i> Gestión de Ventas</h1>
+            <p>Registra y administra las ventas de la granja</p>
+        </div>
+    </div>
+
+    <!-- Contenedor principal -->
+    <div class="container">
+        <div class="form-container">
+            <h2>Nueva Venta</h2>
+            <form id="ventaForm" data-validate>
+                <div class="form-group">
+                    <label for="cliente" class="form-label">Cliente *</label>
+                    <select id="cliente" name="cliente" class="form-control" required>
+                        <option value="">Seleccione un cliente...</option>
+                    </select>
+                </div>
+                
+                <hr style="margin: 20px 0;">
+                <h3 style="margin-bottom: 15px; font-size: 1.2rem;">Agregar Productos</h3>
+                
+                <div class="form-group">
+                    <label for="producto" class="form-label">Producto *</label>
+                    <select id="producto" name="producto" class="form-control">
+                        <option value="">Seleccione un producto...</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="cantidad" class="form-label">Cantidad *</label>
+                    <input type="number" id="cantidad" name="cantidad" class="form-control" min="1" value="1">
+                </div>
+                <button type="button" id="btnAgregarProducto" class="btn btn-secondary" onclick="agregarProductoCarrito()">
+                    <i class="fas fa-cart-plus"></i> Agregar al Carrito
+                </button>
+                
+                <hr style="margin: 20px 0;">
+                <h3 style="margin-bottom: 15px; font-size: 1.2rem;">Carrito de Compra</h3>
+                
+                <div id="carritoVenta" style="min-height: 100px; background: #f9f9f9; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                    <p class="text-center" style="color: #666;">No hay productos en el carrito</p>
+                </div>
+                
+                <div style="text-align: right; font-size: 1.3rem; font-weight: bold; margin-bottom: 15px;">
+                    Total: <span id="totalVenta">$0</span>
+                </div>
+                
+                <button type="submit" class="btn btn-primary" style="width: 100%;">
+                    <i class="fas fa-check"></i> Registrar Venta
+                </button>
+            </form>
+        </div>
+
+        <div class="table-container">
+            <h2>Historial de Ventas</h2>
+            <table class="table" id="ventasTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Cliente</th>
+                        <th>Producto</th>
+                        <th>Cantidad</th>
+                        <th>Total</th>
+                        <th>Fecha</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td colspan="7" class="text-center">Cargando ventas...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>&copy; 2025 Granja Media Luna. Todos los derechos reservados.</p>
+    </footer>
+
+    <!-- 🔐 Protección de sesión - DEBE IR PRIMERO -->
+    <script src="js/session_guard.js"></script>
+    
+    <script src="js/main.js"></script>
+    <script src="js/ventas.js"></script>
+    <script>
+        // Actualizar UI de sesión al cargar la página
+        document.addEventListener('DOMContentLoaded', function() {
+            updateSessionUI();
+        });
+    </script>
+</body>
+</html>
+
+
