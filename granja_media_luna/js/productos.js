@@ -1,3 +1,74 @@
+console.log('✅ Archivo productos.js cargado correctamente');
+
+// 🔍 Filtrar productos por nombre
+function filterProducts() {
+    console.log('⚡ Función filterProducts() ejecutada');
+    
+    const searchInput = document.getElementById('searchInput');
+    
+    if (!searchInput) {
+        console.error('❌ No se encontró el campo de búsqueda');
+        return;
+    }
+    
+    const searchTerm = searchInput.value.toLowerCase().trim();
+    const productCards = document.querySelectorAll('.product-card');
+    let visibleCount = 0;
+    
+    // Debug: mostrar lo que estamos buscando
+    console.log('========================================');
+    console.log('🔍 Término de búsqueda:', `"${searchTerm}"`);
+    console.log('📊 Total de productos:', productCards.length);
+    
+    productCards.forEach((card, index) => {
+        const productName = card.querySelector('.product-name')?.textContent.toLowerCase().trim() || '';
+        
+        // Debug: mostrar cada producto
+        console.log(`\n📦 Producto ${index + 1}:`);
+        console.log('   Nombre:', `"${productName}"`);
+        console.log('   Buscando:', `"${searchTerm}"`);
+        console.log('   ¿Son iguales?', productName === searchTerm);
+        
+        // Verificar si coincide con la búsqueda exacta por nombre
+        const matchesSearch = searchTerm === '' || productName === searchTerm;
+        
+        // Mostrar u ocultar la tarjeta
+        if (matchesSearch) {
+            card.style.display = 'block';
+            visibleCount++;
+        } else {
+            card.style.display = 'none';
+        }
+    });
+    
+    console.log(`\n✅ Productos visibles: ${visibleCount}`);
+    console.log('========================================\n');
+    
+    // Mostrar mensaje si no hay resultados
+    const grid = document.getElementById('productsGrid');
+    let noResultsMsg = document.querySelector('.no-results-message');
+    
+    if (visibleCount === 0 && productCards.length > 0 && searchTerm !== '') {
+        if (!noResultsMsg) {
+            noResultsMsg = document.createElement('div');
+            noResultsMsg.className = 'no-results-message no-products';
+            noResultsMsg.innerHTML = `
+                <i class="fas fa-search"></i>
+                <p>No se encontraron productos con el nombre "${searchInput.value}".</p>
+            `;
+            grid.appendChild(noResultsMsg);
+        } else {
+            noResultsMsg.innerHTML = `
+                <i class="fas fa-search"></i>
+                <p>No se encontraron productos con el nombre "${searchInput.value}".</p>
+            `;
+        }
+        noResultsMsg.style.display = 'block';
+    } else if (noResultsMsg) {
+        noResultsMsg.style.display = 'none';
+    }
+}
+
 // 📦 Cargar productos desde la base de datos
 async function loadProducts() {
     const grid = document.getElementById("productsGrid");
@@ -209,6 +280,9 @@ async function guardarEdicionProducto(event) {
 
 // 📝 Manejar el envío del formulario de productos
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('🚀 DOMContentLoaded - Página cargada');
+    alert('Página cargada - JavaScript funcionando');
+    
     const form = document.getElementById('productoForm');
     
     if (form) {
@@ -258,5 +332,39 @@ document.addEventListener('DOMContentLoaded', function() {
                 cerrarModalEditar();
             }
         });
+    }
+    
+    // Agregar eventos de búsqueda
+    const searchInput = document.getElementById('searchInput');
+    const searchButton = document.getElementById('searchButton');
+    
+    console.log('🔧 Configurando eventos de búsqueda...');
+    console.log('   searchInput encontrado:', !!searchInput);
+    console.log('   searchButton encontrado:', !!searchButton);
+    
+    if (searchButton) {
+        searchButton.addEventListener('click', function() {
+            console.log('🖱️ Botón de búsqueda clickeado');
+            alert('Botón clickeado. Buscando: ' + searchInput.value);
+            filterProducts();
+        });
+        console.log('✅ Evento click agregado al botón');
+    } else {
+        console.error('❌ No se encontró el botón de búsqueda');
+        alert('ERROR: No se encontró el botón de búsqueda');
+    }
+    
+    if (searchInput) {
+        // Buscar al presionar Enter
+        searchInput.addEventListener('keypress', function(e) {
+            console.log('⌨️ Tecla presionada:', e.key);
+            if (e.key === 'Enter') {
+                console.log('↩️ Enter presionado, ejecutando búsqueda');
+                filterProducts();
+            }
+        });
+        console.log('✅ Evento keypress agregado al input');
+    } else {
+        console.error('❌ No se encontró el input de búsqueda');
     }
 });

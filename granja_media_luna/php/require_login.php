@@ -4,7 +4,10 @@
  * Verifica que el usuario esté logueado antes de permitir operaciones
  */
 
-session_start();
+// Solo iniciar sesión si no está ya iniciada
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 /**
  * Verifica si el usuario está logueado

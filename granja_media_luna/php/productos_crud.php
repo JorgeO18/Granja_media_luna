@@ -1,4 +1,5 @@
 <?php
+session_start(); // Iniciar sesión antes de cualquier header
 header("Content-Type: application/json");
 include("conexion.php");
 include("require_login.php");
