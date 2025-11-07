@@ -29,7 +29,7 @@ switch ($method) {
         
     case 'POST':
         // Solo administradores pueden crear productos
-        requireLogin();
+        requireAdmin();
         
         // Crear nuevo producto
         $nombre = trim($_POST['nombre'] ?? '');
@@ -76,7 +76,7 @@ switch ($method) {
         
     case 'PUT':
         // Solo administradores pueden actualizar productos
-        requireLogin();
+        requireAdmin();
         
         // Actualizar producto
         parse_str(file_get_contents("php://input"), $data);
@@ -99,7 +99,7 @@ switch ($method) {
         
     case 'DELETE':
         // Solo administradores pueden eliminar productos
-        requireLogin();
+        requireAdmin();
         
         // Eliminar producto
         parse_str(file_get_contents("php://input"), $data);

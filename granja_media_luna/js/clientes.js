@@ -16,11 +16,10 @@ async function loadClientes() {
 
         clientes.forEach(cliente => {
             const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${cliente.id}</td>
-                <td>${cliente.nombre}</td>
-                <td>${cliente.telefono || 'N/A'}</td>
-                <td>${cliente.correo || 'N/A'}</td>
+            
+            // Verificar si el usuario es admin para mostrar los botones de edición/eliminación
+            const isAdmin = window.isAdmin || false;
+            const actionButtons = isAdmin ? `
                 <td>
                     <button class="btn btn-sm btn-secondary" onclick="editCliente(${cliente.id})">
                         <i class="fas fa-edit"></i>
@@ -29,6 +28,14 @@ async function loadClientes() {
                         <i class="fas fa-trash"></i>
                     </button>
                 </td>
+            ` : '<td>-</td>';
+            
+            row.innerHTML = `
+                <td>${cliente.id}</td>
+                <td>${cliente.nombre}</td>
+                <td>${cliente.telefono || 'N/A'}</td>
+                <td>${cliente.correo || 'N/A'}</td>
+                ${actionButtons}
             `;
             tbody.appendChild(row);
         });

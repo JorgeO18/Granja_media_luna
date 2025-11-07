@@ -1,13 +1,8 @@
-console.log('✅ Archivo productos.js cargado correctamente');
-
 // 🔍 Filtrar productos por nombre
 function filterProducts() {
-    console.log('⚡ Función filterProducts() ejecutada');
-    
     const searchInput = document.getElementById('searchInput');
     
     if (!searchInput) {
-        console.error('❌ No se encontró el campo de búsqueda');
         return;
     }
     
@@ -15,24 +10,10 @@ function filterProducts() {
     const productCards = document.querySelectorAll('.product-card');
     let visibleCount = 0;
     
-    // Debug: mostrar lo que estamos buscando
-    console.log('========================================');
-    console.log('🔍 Término de búsqueda:', `"${searchTerm}"`);
-    console.log('📊 Total de productos:', productCards.length);
-    
-    productCards.forEach((card, index) => {
+    productCards.forEach((card) => {
         const productName = card.querySelector('.product-name')?.textContent.toLowerCase().trim() || '';
-        
-        // Debug: mostrar cada producto
-        console.log(`\n📦 Producto ${index + 1}:`);
-        console.log('   Nombre:', `"${productName}"`);
-        console.log('   Buscando:', `"${searchTerm}"`);
-        console.log('   ¿Son iguales?', productName === searchTerm);
-        
-        // Verificar si coincide con la búsqueda exacta por nombre
         const matchesSearch = searchTerm === '' || productName === searchTerm;
         
-        // Mostrar u ocultar la tarjeta
         if (matchesSearch) {
             card.style.display = 'block';
             visibleCount++;
@@ -40,9 +21,6 @@ function filterProducts() {
             card.style.display = 'none';
         }
     });
-    
-    console.log(`\n✅ Productos visibles: ${visibleCount}`);
-    console.log('========================================\n');
     
     // Mostrar mensaje si no hay resultados
     const grid = document.getElementById('productsGrid');
@@ -104,6 +82,20 @@ async function loadProducts() {
 
             const card = document.createElement("div");
             card.className = "product-card";
+            
+            // Verificar si el usuario es admin para mostrar los botones de edición/eliminación
+            const isAdmin = window.isAdmin || false;
+            const actionButtons = isAdmin ? `
+                <div class="product-actions">
+                    <button class="btn btn-sm btn-secondary" onclick="editProduct(${prod.id})">
+                        <i class="fas fa-edit"></i> Editar
+                    </button>
+                    <button class="btn btn-sm btn-danger" onclick="deleteProduct(${prod.id})">
+                        <i class="fas fa-trash"></i> Eliminar
+                    </button>
+                </div>
+            ` : '';
+            
             card.innerHTML = `
                 <div class="product-header">
                     <i class="fas fa-egg product-icon"></i>
@@ -126,14 +118,7 @@ async function loadProducts() {
                             ${prod.stock > 100 ? "Disponible" : prod.stock > 50 ? "Limitado" : "Bajo stock"}
                         </span>
                     </div>
-                    <div class="product-actions">
-                        <button class="btn btn-sm btn-secondary" onclick="editProduct(${prod.id})">
-                            <i class="fas fa-edit"></i> Editar
-                        </button>
-                        <button class="btn btn-sm btn-danger" onclick="deleteProduct(${prod.id})">
-                            <i class="fas fa-trash"></i> Eliminar
-                        </button>
-                    </div>
+                    ${actionButtons}
                 </div>
             `;
             grid.appendChild(card);
@@ -280,9 +265,6 @@ async function guardarEdicionProducto(event) {
 
 // 📝 Manejar el envío del formulario de productos
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('🚀 DOMContentLoaded - Página cargada');
-    alert('Página cargada - JavaScript funcionando');
-    
     const form = document.getElementById('productoForm');
     
     if (form) {
@@ -338,33 +320,18 @@ document.addEventListener('DOMContentLoaded', function() {
     const searchInput = document.getElementById('searchInput');
     const searchButton = document.getElementById('searchButton');
     
-    console.log('🔧 Configurando eventos de búsqueda...');
-    console.log('   searchInput encontrado:', !!searchInput);
-    console.log('   searchButton encontrado:', !!searchButton);
-    
     if (searchButton) {
         searchButton.addEventListener('click', function() {
-            console.log('🖱️ Botón de búsqueda clickeado');
-            alert('Botón clickeado. Buscando: ' + searchInput.value);
             filterProducts();
         });
-        console.log('✅ Evento click agregado al botón');
-    } else {
-        console.error('❌ No se encontró el botón de búsqueda');
-        alert('ERROR: No se encontró el botón de búsqueda');
     }
     
     if (searchInput) {
         // Buscar al presionar Enter
         searchInput.addEventListener('keypress', function(e) {
-            console.log('⌨️ Tecla presionada:', e.key);
             if (e.key === 'Enter') {
-                console.log('↩️ Enter presionado, ejecutando búsqueda');
                 filterProducts();
             }
         });
-        console.log('✅ Evento keypress agregado al input');
-    } else {
-        console.error('❌ No se encontró el input de búsqueda');
     }
 });

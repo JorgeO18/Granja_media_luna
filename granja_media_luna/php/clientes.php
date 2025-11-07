@@ -27,8 +27,8 @@ switch ($method) {
         break;
         
     case 'POST':
-        // Requiere login para crear clientes
-        requireLogin();
+        // Solo administradores pueden crear clientes
+        requireAdmin();
         
         // Crear nuevo cliente
         $nombre = trim($_POST['nombre'] ?? '');
@@ -69,8 +69,8 @@ switch ($method) {
         break;
         
     case 'PUT':
-        // Requiere login para actualizar clientes
-        requireLogin();
+        // Solo administradores pueden actualizar clientes
+        requireAdmin();
         
         // Actualizar cliente
         parse_str(file_get_contents("php://input"), $data);
@@ -91,8 +91,8 @@ switch ($method) {
         break;
         
     case 'DELETE':
-        // Requiere login para eliminar clientes
-        requireLogin();
+        // Solo administradores pueden eliminar clientes
+        requireAdmin();
         
         // Eliminar cliente
         parse_str(file_get_contents("php://input"), $data);
