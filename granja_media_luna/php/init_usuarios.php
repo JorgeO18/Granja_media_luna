@@ -41,7 +41,7 @@ if ($row['total'] > 0) {
     echo "<p><strong>Credenciales de prueba:</strong></p>";
     echo "<ul>";
     echo "<li>Admin: admin@granjamedialuna.com / password (o 12345)</li>";
-    echo "<li>Empleado: empleado@granjamedialuna.com / password (o 12345)</li>";
+    echo "<li>Usuario: empleado@granjamedialuna.com / password (o 12345)</li>";
     echo "</ul>";
     echo "<br>";
     echo "<p><a href='../login.html' style='background-color: #5c8a4b; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;'>🔐 Ir al Login</a></p>";
@@ -67,16 +67,16 @@ if ($row['total'] > 0) {
         echo "<p style='color: red;'>❌ Error al crear administrador: " . $stmt->error . "</p>";
     }
     
-    // Insertar empleado
-    $nombre = "Empleado";
+    // Insertar usuario
+    $nombre = "Usuario";
     $correo = "empleado@granjamedialuna.com";
-    $rol = "empleado";
+    $rol = "usuario";
     $stmt->bind_param("ssss", $nombre, $correo, $passwordHash, $rol);
     
     if ($stmt->execute()) {
-        echo "<p style='color: green;'>✅ Usuario empleado creado exitosamente</p>";
+        echo "<p style='color: green;'>✅ Usuario creado exitosamente</p>";
     } else {
-        echo "<p style='color: red;'>❌ Error al crear empleado: " . $stmt->error . "</p>";
+        echo "<p style='color: red;'>❌ Error al crear usuario: " . $stmt->error . "</p>";
     }
     
     echo "<hr>";
@@ -84,7 +84,7 @@ if ($row['total'] > 0) {
     echo "<p><strong>Credenciales creadas:</strong></p>";
     echo "<ul>";
     echo "<li>Admin: admin@granjamedialuna.com / password (o 12345)</li>";
-    echo "<li>Empleado: empleado@granjamedialuna.com / password (o 12345)</li>";
+    echo "<li>Usuario: empleado@granjamedialuna.com / password (o 12345)</li>";
     echo "</ul>";
     echo "<br>";
     echo "<p><a href='../login.html' style='background-color: #5c8a4b; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;'>🔐 Ir al Login</a></p>";

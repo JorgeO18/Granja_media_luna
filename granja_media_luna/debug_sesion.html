@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Sesión</title>
+</head>
+<body>
+    <h1>Debug de Sesión</h1>
+    <div id="info"></div>
+    
+    <script src="js/main.js"></script>
+    <script>
+        async function mostrarInfo() {
+            try {
+                const response = await fetch('php/check_session.php');
+                const data = await response.json();
+                
+                const info = document.getElementById('info');
+                info.innerHTML = `
+                    <h2>Datos de Sesión:</h2>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                    
+                    <h2>Variables JavaScript:</h2>
+                    <p>window.userRole: ${window.userRole || 'no definido'}</p>
+                    <p>window.isAdmin: ${window.isAdmin || 'no definido'}</p>
+                    
+                    <h2>Elementos en página:</h2>
+                    <p>Enlaces .usuario-only encontrados: ${document.querySelectorAll('.usuario-only').length}</p>
+                    <p>Enlaces .admin-only encontrados: ${document.querySelectorAll('.admin-only').length}</p>
+                    
+                    <h2>Rol detectado:</h2>
+                    <p>Es admin? ${data.user_role === 'admin' ? 'SÍ' : 'NO'}</p>
+                    <p>Es usuario? ${data.user_role === 'usuario' ? 'SÍ' : 'NO'}</p>
+                    <p>Rol actual: <strong>${data.user_role || 'no definido'}</strong></p>
+                `;
+                
+                // Verificar si los enlaces deberían mostrarse
+                if (data.logged_in) {
+                    const isAdmin = data.user_role === 'admin';
+                    const usuarioLinks = document.querySelectorAll('.usuario-only');
+                    const adminLinks = document.querySelectorAll('.admin-only');
+                    
+                    info.innerHTML += `
+                        <h2>Estado de enlaces:</h2>
+                        <p>usuarioLinks deberían mostrarse: ${!isAdmin ? 'SÍ' : 'NO'}</p>
+                        <p>adminLinks deberían mostrarse: ${isAdmin ? 'SÍ' : 'NO'}</p>
+                    `;
+                }
+            } catch (error) {
+                document.getElementById('info').innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', async function() {
+            await updateSessionUI();
+            setTimeout(mostrarInfo, 500);
+        });
+    </script>
+</body>
+</html>
+
+

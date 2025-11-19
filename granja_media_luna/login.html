@@ -19,11 +19,17 @@
                 </div>
                 <ul class="nav-menu">
                     <li><a href="index.html" class="nav-link">Inicio</a></li>
-                    <li><a href="productos.html" class="nav-link">Productos</a></li>
-                    <li><a href="clientes.html" class="nav-link">Clientes</a></li>
-                    <li><a href="ventas.html" class="nav-link">Ventas</a></li>
+                    <li><a href="catalogo.html" class="nav-link">Catálogo</a></li>
                     <li><a href="contacto.html" class="nav-link">Contacto</a></li>
-                    <li><a href="login.html" class="nav-link login-btn active">Iniciar Sesión</a></li>
+                    <!-- Enlaces solo para usuarios logueados -->
+                    <li class="usuario-only" style="display: none;"><a href="compras.html" class="nav-link">Compras</a></li>
+                    <!-- Enlaces solo para administradores -->
+                    <li class="admin-only" style="display: none;"><a href="productos.html" class="nav-link">Gestión Productos</a></li>
+                    <li class="admin-only" style="display: none;"><a href="clientes.html" class="nav-link">Gestión Clientes</a></li>
+                    <li class="admin-only" style="display: none;"><a href="ventas.html" class="nav-link">Ventas</a></li>
+                    <li><a href="login.html" class="nav-link login-btn active" id="loginLink">Iniciar Sesión</a></li>
+                    <li style="display: none;"><a href="#" class="nav-link login-btn" id="logoutLink" onclick="logout()">Cerrar Sesión</a></li>
+                    <li id="userInfo" style="display: none;"><span class="nav-link" style="color: var(--accent-yellow);"><i class="fas fa-user"></i> <span id="userName"></span></span></li>
                 </ul>
             </div>
         </nav>
@@ -63,7 +69,7 @@
                 <p style="color: var(--gray); font-size: 0.9rem;">
                     <strong>Credenciales de prueba:</strong><br>
                     Admin: admin@granjamedialuna.com / password<br>
-                    Empleado: empleado@granjamedialuna.com / password
+                    Usuario: empleado@granjamedialuna.com / password
                 </p>
             </div>
         </div>
@@ -75,5 +81,11 @@
 
     <script src="js/main.js"></script>
     <script src="js/login.js"></script>
+    <script>
+        // Actualizar UI de sesión al cargar la página
+        document.addEventListener('DOMContentLoaded', function() {
+            updateSessionUI();
+        });
+    </script>
 </body>
 </html>

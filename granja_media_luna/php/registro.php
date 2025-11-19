@@ -11,7 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $correo = $_POST['correo'] ?? '';
     $contrasena = $_POST['contrasena'] ?? '';
     $confirmar_contrasena = $_POST['confirmar_contrasena'] ?? '';
-    $rol = $_POST['rol'] ?? 'empleado'; // Por defecto empleado
+    $rol = $_POST['rol'] ?? 'usuario'; // Por defecto usuario
     
     // Validaciones
     if (empty($nombre) || empty($correo) || empty($contrasena)) {
@@ -38,14 +38,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Verificar si el correo ya existe
     $query = "SELECT id FROM usuarios WHERE correo = ?";
     $stmt = $conexion->prepare($query);
+    
+    if (!$stmt) {
+        echo json_encode(['success' => false, 'message' => 'Error al preparar la consulta: ' . $conexion->error]);
+        $conexion->close();
+        exit;
+    }
+    
     $stmt->bind_param("s", $correo);
     $stmt->execute();
     $result = $stmt->get_result();
     
     if ($result->num_rows > 0) {
+        $stmt->close();
         echo json_encode(['success' => false, 'message' => 'Este correo ya está registrado']);
+        $conexion->close();
         exit;
     }
+    
+    $stmt->close();
     
     // Hashear contraseña
     $contrasenaHash = password_hash($contrasena, PASSWORD_DEFAULT);
@@ -53,15 +64,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Insertar usuario
     $query = "INSERT INTO usuarios (nombre, correo, contrasena, rol) VALUES (?, ?, ?, ?)";
     $stmt = $conexion->prepare($query);
+    
+    if (!$stmt) {
+        echo json_encode(['success' => false, 'message' => 'Error al preparar la consulta: ' . $conexion->error]);
+        $conexion->close();
+        exit;
+    }
+    
     $stmt->bind_param("ssss", $nombre, $correo, $contrasenaHash, $rol);
     
     if ($stmt->execute()) {
+        $stmt->close();
         echo json_encode([
             'success' => true, 
             'message' => 'Usuario registrado exitosamente. Ya puedes iniciar sesión.'
         ]);
     } else {
-        echo json_encode(['success' => false, 'message' => 'Error al registrar usuario: ' . $stmt->error]);
+        $error = $stmt->error;
+        $stmt->close();
+        echo json_encode(['success' => false, 'message' => 'Error al registrar usuario: ' . $error]);
     }
 } else {
     echo json_encode(['success' => false, 'message' => 'Método no permitido']);

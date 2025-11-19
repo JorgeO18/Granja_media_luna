@@ -28,6 +28,10 @@
                         <a href="contacto.html" class="nav-link">Contacto</a>
                     </li>
                     <!-- Enlaces solo para usuarios logueados -->
+                    <li class="nav-item usuario-only" style="display: none;">
+                        <a href="compras.html" class="nav-link">Compras</a>
+                    </li>
+                    <!-- Enlaces solo para administradores -->
                     <li class="nav-item admin-only" style="display: none;">
                         <a href="productos.html" class="nav-link">Gestión Productos</a>
                     </li>
@@ -143,8 +147,45 @@
     <script src="js/ventas.js"></script>
     <script>
         // Actualizar UI de sesión al cargar la página
-        document.addEventListener('DOMContentLoaded', function() {
-            updateSessionUI();
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Esperar a que se actualice la sesión antes de cargar ventas
+            await updateSessionUI();
+            
+            // Verificar que window.isAdmin esté establecido
+            console.log('Después de updateSessionUI:', { 
+                isAdmin: window.isAdmin, 
+                userRole: window.userRole 
+            });
+            
+            // Esperar un momento adicional para asegurar que todo esté listo
+            await new Promise(resolve => setTimeout(resolve, 50));
+            
+            // Cargar ventas después de que la sesión esté actualizada
+            console.log('🔵 Intentando cargar ventas...');
+            console.log('🔵 loadVentas es función?', typeof loadVentas);
+            console.log('🔵 window.isAdmin antes de loadVentas:', window.isAdmin);
+            
+            if (typeof loadVentas === 'function') {
+                console.log('✅ Llamando a loadVentas()...');
+                console.log('✅ Función loadVentas:', loadVentas.toString().substring(0, 100));
+                try {
+                    const result = await loadVentas();
+                    console.log('✅ loadVentas() completada, resultado:', result);
+                } catch (error) {
+                    console.error('❌ Error ejecutando loadVentas():', error);
+                    console.error('❌ Error completo:', error.message, error.stack);
+                }
+            } else {
+                console.error('❌ loadVentas no es una función! Tipo:', typeof loadVentas);
+                console.error('❌ Variables globales disponibles:', Object.keys(window).filter(k => k.includes('load')));
+            }
+            
+            if (typeof loadClientes === 'function') {
+                loadClientes();
+            }
+            if (typeof loadProductos === 'function') {
+                loadProductos();
+            }
         });
     </script>
 </body>

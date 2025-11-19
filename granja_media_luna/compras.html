@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestión de Clientes - Granja Media Luna</title>
+    <title>Compras - Granja Media Luna</title>
     <link rel="stylesheet" href="css/styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -29,14 +29,14 @@
                     </li>
                     <!-- Enlaces solo para usuarios logueados -->
                     <li class="nav-item usuario-only" style="display: none;">
-                        <a href="compras.html" class="nav-link">Compras</a>
+                        <a href="compras.html" class="nav-link active">Compras</a>
                     </li>
                     <!-- Enlaces solo para administradores -->
                     <li class="nav-item admin-only" style="display: none;">
                         <a href="productos.html" class="nav-link">Gestión Productos</a>
                     </li>
                     <li class="nav-item admin-only" style="display: none;">
-                        <a href="clientes.html" class="nav-link active">Gestión Clientes</a>
+                        <a href="clientes.html" class="nav-link">Gestión Clientes</a>
                     </li>
                     <li class="nav-item admin-only" style="display: none;">
                         <a href="ventas.html" class="nav-link">Ventas</a>
@@ -62,85 +62,68 @@
     <!-- Encabezado de Página -->
     <div class="page-header">
         <div class="container">
-            <h1><i class="fas fa-users"></i> Gestión de Clientes</h1>
-            <p>Administra la información de tus clientes</p>
+            <h1><i class="fas fa-shopping-bag"></i> Realizar Compra</h1>
+            <p>Selecciona los productos que deseas comprar</p>
         </div>
     </div>
 
     <!-- Contenedor principal -->
     <div class="container">
-        <div class="form-container admin-only-content">
-            <h2>Agregar Nuevo Cliente</h2>
-            <form id="clienteForm" data-validate>
+        <div class="form-container">
+            <h2>Mi Carrito de Compra</h2>
+            <form id="compraForm" data-validate>
+                <hr style="margin: 20px 0;">
+                <h3 style="margin-bottom: 15px; font-size: 1.2rem;">Agregar Productos</h3>
+                
                 <div class="form-group">
-                    <label for="nombre" class="form-label">Nombre Completo *</label>
-                    <input type="text" id="nombre" name="nombre" class="form-control" required>
+                    <label for="producto" class="form-label">Producto *</label>
+                    <select id="producto" name="producto" class="form-control">
+                        <option value="">Seleccione un producto...</option>
+                    </select>
                 </div>
                 <div class="form-group">
-                    <label for="telefono" class="form-label">Teléfono *</label>
-                    <input type="tel" id="telefono" name="telefono" class="form-control" required>
+                    <label for="cantidad" class="form-label">Cantidad *</label>
+                    <input type="number" id="cantidad" name="cantidad" class="form-control" min="1" value="1">
                 </div>
-                <div class="form-group">
-                    <label for="correo" class="form-label">Correo Electrónico</label>
-                    <input type="email" id="correo" name="correo" class="form-control">
+                <button type="button" id="btnAgregarProducto" class="btn btn-secondary" onclick="agregarProductoCarrito()">
+                    <i class="fas fa-cart-plus"></i> Agregar al Carrito
+                </button>
+                
+                <hr style="margin: 20px 0;">
+                <h3 style="margin-bottom: 15px; font-size: 1.2rem;">Carrito de Compra</h3>
+                
+                <div id="carritoCompra" style="min-height: 100px; background: #f9f9f9; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                    <p class="text-center" style="color: #666;">No hay productos en el carrito</p>
                 </div>
-                <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-plus"></i> Agregar Cliente
+                
+                <div style="text-align: right; font-size: 1.3rem; font-weight: bold; margin-bottom: 15px;">
+                    Total: <span id="totalCompra">$0</span>
+                </div>
+                
+                <button type="submit" class="btn btn-primary" style="width: 100%;">
+                    <i class="fas fa-check"></i> Confirmar Compra
                 </button>
             </form>
         </div>
 
         <div class="table-container">
-            <h2>Lista de Clientes</h2>
-            <table class="table" id="clientesTable">
+            <h2>Mis Compras Anteriores</h2>
+            <table class="table" id="comprasTable">
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>Nombre</th>
-                        <th>Teléfono</th>
-                        <th>Correo</th>
+                        <th>Fecha</th>
+                        <th>Productos</th>
+                        <th>Total</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <td colspan="5" class="text-center">Cargando clientes...</td>
+                        <td colspan="5" class="text-center">Cargando compras...</td>
                     </tr>
                 </tbody>
             </table>
-        </div>
-    </div>
-
-    <!-- Modal para editar cliente -->
-    <div id="modalEditarCliente" class="modal" style="display: none;">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Editar Cliente</h2>
-                <span class="modal-close" onclick="cerrarModalEditarCliente()">&times;</span>
-            </div>
-            <div class="modal-body">
-                <form id="editarClienteForm" data-validate>
-                    <input type="hidden" id="edit_cliente_id" name="id">
-                    <div class="form-group">
-                        <label for="edit_cliente_nombre" class="form-label">Nombre Completo: *</label>
-                        <input type="text" id="edit_cliente_nombre" name="nombre" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="edit_cliente_telefono" class="form-label">Teléfono: *</label>
-                        <input type="tel" id="edit_cliente_telefono" name="telefono" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="edit_cliente_correo" class="form-label">Correo Electrónico:</label>
-                        <input type="email" id="edit_cliente_correo" name="correo" class="form-control">
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" onclick="cerrarModalEditarCliente()">Cancelar</button>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save"></i> Guardar Cambios
-                        </button>
-                    </div>
-                </form>
-            </div>
         </div>
     </div>
 
@@ -152,17 +135,25 @@
     <script src="js/session_guard.js"></script>
     
     <script src="js/main.js"></script>
-    <script src="js/clientes.js"></script>
+    <script src="js/compras.js"></script>
     <script>
         // Actualizar UI de sesión al cargar la página
         document.addEventListener('DOMContentLoaded', async function() {
-            // Esperar a que se actualice la sesión antes de cargar clientes
+            // Esperar a que se actualice la sesión antes de cargar compras
             await updateSessionUI();
-            // Cargar clientes después de que la sesión esté actualizada
-            if (typeof loadClientes === 'function') {
-                loadClientes();
+            
+            // Esperar un momento adicional para asegurar que todo esté listo
+            await new Promise(resolve => setTimeout(resolve, 50));
+            
+            // Cargar datos después de que la sesión esté actualizada
+            if (typeof loadProductos === 'function') {
+                loadProductos();
+            }
+            if (typeof loadCompras === 'function') {
+                loadCompras();
             }
         });
     </script>
 </body>
 </html>
+

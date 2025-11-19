@@ -31,6 +31,10 @@
                         <a href="contacto.html" class="nav-link">Contacto</a>
                     </li>
                     <!-- Enlaces solo para usuarios logueados -->
+                    <li class="nav-item usuario-only" style="display: none;">
+                        <a href="compras.html" class="nav-link">Compras</a>
+                    </li>
+                    <!-- Enlaces solo para administradores -->
                     <li class="nav-item admin-only" style="display: none;">
                         <a href="productos.html" class="nav-link active">Gestión Productos</a>
                     </li>
@@ -170,8 +174,9 @@
     <script src="js/main.js"></script>
     <script src="js/productos.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            updateSessionUI(); // Actualizar UI de sesión
+        document.addEventListener('DOMContentLoaded', async function () {
+            // Esperar a que se actualice la sesión antes de cargar productos
+            await updateSessionUI(); // Actualizar UI de sesión
             loadProducts(); // 👈 Esto carga los productos al entrar
         });
     </script>

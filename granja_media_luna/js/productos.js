@@ -84,7 +84,7 @@ async function loadProducts() {
             card.className = "product-card";
             
             // Verificar si el usuario es admin para mostrar los botones de edición/eliminación
-            const isAdmin = window.isAdmin || false;
+            const isAdmin = window.isAdmin === true;
             const actionButtons = isAdmin ? `
                 <div class="product-actions">
                     <button class="btn btn-sm btn-secondary" onclick="editProduct(${prod.id})">
@@ -136,28 +136,44 @@ async function loadProducts() {
 
 // Función para eliminar producto
 async function deleteProduct(id) {
-    if (confirm('¿Estás seguro de que quieres eliminar este producto?')) {
-        try {
-            const response = await fetch('php/productos_crud.php', {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: `id=${id}`
-            });
-            
-            const result = await response.json();
-            
-            if (result.success) {
-                showAlert('Producto eliminado exitosamente', 'success');
-                loadProducts(); // Recargar la lista
-            } else {
-                showAlert(result.message, 'danger');
-            }
-        } catch (error) {
-            showAlert('Error al eliminar producto', 'danger');
-            console.error('Error:', error);
+    if (!confirm('¿Estás seguro de que quieres eliminar este producto?')) {
+        return;
+    }
+    
+    try {
+        const response = await fetch('php/productos_crud.php', {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `id=${id}`
+        });
+        
+        // Verificar si la respuesta es válida
+        if (!response.ok) {
+            throw new Error(`Error HTTP: ${response.status}`);
         }
+        
+        // Intentar parsear la respuesta como JSON
+        let result;
+        const text = await response.text();
+        try {
+            result = JSON.parse(text);
+        } catch (parseError) {
+            console.error('Error al parsear respuesta:', text);
+            throw new Error('Respuesta inválida del servidor');
+        }
+        
+        if (result.success) {
+            showAlert('Producto eliminado exitosamente', 'success');
+            loadProducts(); // Recargar la lista
+        } else {
+            showAlert(result.message || 'Error al eliminar producto', 'danger');
+            console.error('Error del servidor:', result);
+        }
+    } catch (error) {
+        showAlert('Error al eliminar producto: ' + error.message, 'danger');
+        console.error('Error completo:', error);
     }
 }
 

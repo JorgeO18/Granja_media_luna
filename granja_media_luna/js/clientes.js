@@ -74,28 +74,44 @@ async function addCliente(event) {
 
 // Función para eliminar cliente
 async function deleteCliente(id) {
-    if (confirm('¿Estás seguro de que quieres eliminar este cliente?')) {
-        try {
-            const response = await fetch('php/clientes.php', {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: `id=${id}`
-            });
-            
-            const result = await response.json();
-            
-            if (result.success) {
-                showAlert('Cliente eliminado exitosamente', 'success');
-                loadClientes(); // Recargar la lista
-            } else {
-                showAlert(result.message, 'danger');
-            }
-        } catch (error) {
-            showAlert('Error al eliminar cliente', 'danger');
-            console.error('Error:', error);
+    if (!confirm('¿Estás seguro de que quieres eliminar este cliente?')) {
+        return;
+    }
+    
+    try {
+        const response = await fetch('php/clientes.php', {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `id=${id}`
+        });
+        
+        // Verificar si la respuesta es válida
+        if (!response.ok) {
+            throw new Error(`Error HTTP: ${response.status}`);
         }
+        
+        // Intentar parsear la respuesta como JSON
+        let result;
+        const text = await response.text();
+        try {
+            result = JSON.parse(text);
+        } catch (parseError) {
+            console.error('Error al parsear respuesta:', text);
+            throw new Error('Respuesta inválida del servidor');
+        }
+        
+        if (result.success) {
+            showAlert('Cliente eliminado exitosamente', 'success');
+            loadClientes(); // Recargar la lista
+        } else {
+            showAlert(result.message || 'Error al eliminar cliente', 'danger');
+            console.error('Error del servidor:', result);
+        }
+    } catch (error) {
+        showAlert('Error al eliminar cliente: ' + error.message, 'danger');
+        console.error('Error completo:', error);
     }
 }
 
@@ -189,10 +205,10 @@ async function guardarEdicionCliente(event) {
 }
 
 // Cargar clientes al cargar la página
+// NOTA: Esta función se llama desde clientes.html después de updateSessionUI()
 document.addEventListener('DOMContentLoaded', function() {
-    if (document.getElementById('clientesTable')) {
-        loadClientes();
-    }
+    // loadClientes() se llama desde clientes.html después de updateSessionUI()
+    // para asegurar que window.isAdmin esté establecido
     
     // Manejar formulario de cliente
     const clienteForm = document.getElementById('clienteForm');

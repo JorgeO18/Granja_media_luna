@@ -14,6 +14,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     $query = "SELECT * FROM usuarios WHERE correo = ?";
     $stmt = $conexion->prepare($query);
+    
+    if (!$stmt) {
+        echo json_encode(['success' => false, 'message' => 'Error al preparar la consulta: ' . $conexion->error]);
+        $conexion->close();
+        exit;
+    }
+    
     $stmt->bind_param("s", $correo);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -30,6 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['user_role'] = $usuario['rol'];
             $_SESSION['logged_in'] = true;
             
+            $stmt->close();
             echo json_encode([
                 'success' => true, 
                 'message' => 'Login exitoso',
@@ -39,9 +47,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ]
             ]);
         } else {
+            $stmt->close();
             echo json_encode(['success' => false, 'message' => 'Contraseña incorrecta']);
         }
     } else {
+        $stmt->close();
         echo json_encode(['success' => false, 'message' => 'Usuario no encontrado']);
     }
 } else {

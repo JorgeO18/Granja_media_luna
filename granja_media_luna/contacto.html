@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,6 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
+
 <body>
     <!-- Header -->
     <header class="header">
@@ -28,6 +30,10 @@
                         <a href="contacto.html" class="nav-link active">Contacto</a>
                     </li>
                     <!-- Enlaces solo para usuarios logueados -->
+                    <li class="nav-item usuario-only" style="display: none;">
+                        <a href="compras.html" class="nav-link">Compras</a>
+                    </li>
+                    <!-- Enlaces solo para administradores -->
                     <li class="nav-item admin-only" style="display: none;">
                         <a href="productos.html" class="nav-link">Gestión Productos</a>
                     </li>
@@ -41,7 +47,8 @@
                         <a href="login.html" class="nav-link login-btn" id="loginLink">
                             <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
                         </a>
-                        <a href="#" class="nav-link login-btn" id="logoutLink" onclick="logout()" style="display: none;">
+                        <a href="#" class="nav-link login-btn" id="logoutLink" onclick="logout()"
+                            style="display: none;">
                             <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
                         </a>
                     </li>
@@ -100,10 +107,8 @@
                         </div>
                         <h3>Dirección</h3>
                         <p>Vereda Media Luna, Municipio<br>Colombia</p>
-                        <a href="https://www.google.com/maps/search/Vereda+Media+Luna+Colombia" 
-                           target="_blank" 
-                           class="btn btn-secondary" 
-                           style="margin-top: 10px;">
+                        <a href="https://www.google.com/maps?q=CECAR+Corporación+Universi,+Sincelejo,+Colombia" target="_blank"
+                            class="btn btn-secondary" style="margin-top: 10px;">
                             <i class="fas fa-map-marked-alt"></i> Ver en Google Maps
                         </a>
                     </div>
@@ -113,10 +118,8 @@
                         </div>
                         <h3>Teléfono</h3>
                         <p>(300) 123-4567<br>Lunes a Viernes 8:00 AM - 6:00 PM</p>
-                        <a href="https://wa.me/573001234567?text=Hola,%20me%20gustaría%20información%20sobre%20los%20productos%20de%20la%20granja" 
-                           target="_blank" 
-                           class="btn btn-primary" 
-                           style="margin-top: 10px;">
+                        <a href="https://wa.me/573001234567?text=Hola,%20me%20gustaría%20información%20sobre%20los%20productos%20de%20la%20granja"
+                            target="_blank" class="btn btn-primary" style="margin-top: 10px;">
                             <i class="fab fa-whatsapp"></i> Contactar por WhatsApp
                         </a>
                     </div>
@@ -137,25 +140,21 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- Mapa de ubicación -->
         <div class="container" style="margin-top: 3rem;">
             <h2 class="section-title">Nuestra Ubicación</h2>
             <div style="border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
                 <!-- Mapa embebido de Google Maps -->
                 <!-- Nota: Reemplaza las coordenadas con las reales de la granja -->
-                <iframe 
+                <iframe
                     src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3768.096161806129!2d-75.37051638966844!3d9.308795684508489!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8e5915c10912c14f%3A0x248ad9ff880d0d1c!2sCECAR%20%E2%80%94%20Corporaci%C3%B3n%20Universitaria%20del%20Caribe!5e1!3m2!1ses!2sus!4v1761275520964!5m2!1ses!2sus"" 
-                    width="100%" 
-                    height="400" 
-                    style="border:0;" 
-                    allowfullscreen="" 
-                    loading="lazy" 
+                    width=" 100%" height="400" style="border:0;" allowfullscreen="" loading="lazy"
                     referrerpolicy="no-referrer-when-downgrade">
                 </iframe>
             </div>
             <p style="text-align: center; margin-top: 1rem; color: #666;">
-                <i class="fas fa-info-circle"></i> Puedes visitarnos en la Media Luna. 
+                <i class="fas fa-info-circle"></i> Puedes visitarnos en la Media Luna.
                 Contáctanos previamente para coordinar tu visita.
             </p>
         </div>
@@ -169,11 +168,10 @@
     <script src="js/contacto.js"></script>
     <script>
         // Actualizar UI de sesión al cargar la página
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             updateSessionUI();
         });
     </script>
 </body>
+
 </html>
-
-

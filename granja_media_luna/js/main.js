@@ -427,12 +427,16 @@ async function updateSessionUI() {
         const userInfo = document.getElementById('userInfo');
         const userName = document.getElementById('userName');
         const adminLinks = document.querySelectorAll('.admin-only');
+        const usuarioLinks = document.querySelectorAll('.usuario-only');
         const adminOnly = document.querySelectorAll('.admin-only-content');
         const employeeOnly = document.querySelectorAll('.employee-only');
         
         // Guardar el rol del usuario en una variable global
         window.userRole = data.user_role || null;
         window.isAdmin = (data.user_role === 'admin');
+        
+        console.log('[SessionUI] Datos de sesión:', data);
+        console.log('[SessionUI] usuarioLinks:', usuarioLinks.length, 'adminLinks:', adminLinks.length);
         
         if (data.logged_in) {
             // Usuario está logueado
@@ -444,7 +448,12 @@ async function updateSessionUI() {
             // Mostrar/ocultar enlaces administrativos según el rol
             const isAdmin = data.user_role === 'admin';
             adminLinks.forEach(link => {
-                link.style.display = 'block';
+                link.style.display = isAdmin ? 'block' : 'none';
+            });
+            
+            // Mostrar/ocultar enlaces de usuario (solo para usuarios no admin)
+            usuarioLinks.forEach(link => {
+                link.style.display = isAdmin ? 'none' : 'block';
             });
             
             // Mostrar/ocultar contenido solo para admins
@@ -464,6 +473,11 @@ async function updateSessionUI() {
             
             // Ocultar enlaces administrativos
             adminLinks.forEach(link => {
+                link.style.display = 'none';
+            });
+            
+            // Ocultar enlaces de usuario
+            usuarioLinks.forEach(link => {
                 link.style.display = 'none';
             });
             

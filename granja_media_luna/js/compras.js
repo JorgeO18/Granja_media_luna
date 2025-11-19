@@ -1,50 +1,20 @@
 // ============================================
-// 🛒 GESTIÓN DE VENTAS - Granja Media Luna
+// 🛒 GESTIÓN DE COMPRAS - Granja Media Luna
 // ============================================
-// Este archivo maneja todo el módulo de ventas:
-// - Cargar clientes y productos dinámicamente
+// Este archivo maneja el módulo de compras para usuarios:
+// - Cargar productos dinámicamente
 // - Calcular totales automáticamente
-// - Registrar nuevas ventas
-// - Mostrar historial de ventas
+// - Registrar nuevas compras (ventas asociadas al usuario)
+// - Mostrar historial de compras del usuario
 // ============================================
 
 // 📋 Variables globales
 let productosDisponibles = []; // Almacena los productos cargados
-let carritoVenta = []; // Almacena los productos agregados a la venta actual
+let carritoCompra = []; // Almacena los productos agregados a la compra actual
 
 // ============================================
 // 🔄 CARGAR DATOS INICIALES
 // ============================================
-
-/**
- * Carga todos los clientes desde la base de datos
- * y los muestra en el select del formulario
- */
-async function loadClientes() {
-    try {
-        const response = await fetch('php/clientes.php');
-        const clientes = await response.json();
-        
-        const selectCliente = document.getElementById('cliente');
-        
-        if (!selectCliente) return;
-        
-        // Limpiar opciones previas (excepto la primera)
-        selectCliente.innerHTML = '<option value="">Seleccione un cliente...</option>';
-        
-        // Agregar cada cliente como opción
-        clientes.forEach(cliente => {
-            const option = document.createElement('option');
-            option.value = cliente.id;
-            option.textContent = `${cliente.nombre} - ${cliente.telefono || 'Sin teléfono'}`;
-            selectCliente.appendChild(option);
-        });
-        
-    } catch (error) {
-        console.error('Error cargando clientes:', error);
-        showAlert('Error al cargar la lista de clientes', 'danger');
-    }
-}
 
 /**
  * Carga todos los productos desde la base de datos
@@ -82,139 +52,109 @@ async function loadProductos() {
 }
 
 /**
- * Carga el historial de ventas desde la base de datos
- * y lo muestra en la tabla
+ * Obtiene o crea un cliente basado en el email del usuario logueado
+ * @returns {Promise<number>} ID del cliente
  */
-async function loadVentas() {
-    console.log('🔵 loadVentas() INICIADA');
-    console.log('🔵 Estado inicial:', { 
-        windowIsAdmin: window.isAdmin, 
-        windowUserRole: window.userRole 
-    });
-    
-    const tbody = document.querySelector('#ventasTable tbody');
+async function obtenerClienteId() {
+    try {
+        const response = await fetch('php/get_or_create_cliente.php');
+        const data = await response.json();
+        
+        if (!data.success) {
+            throw new Error(data.message || 'No se pudo obtener el cliente');
+        }
+        
+        return data.cliente_id;
+    } catch (error) {
+        console.error('Error obteniendo/creando cliente:', error);
+        throw error;
+    }
+}
+
+/**
+ * Carga el historial de compras del usuario desde la base de datos
+ * y lo muestra en la tabla (solo las compras donde el cliente coincide con el email del usuario)
+ */
+async function loadCompras() {
+    const tbody = document.querySelector('#comprasTable tbody');
     
     if (!tbody) {
-        console.error('❌ No se encontró #ventasTable tbody');
+        console.error('❌ No se encontró #comprasTable tbody');
         return;
     }
     
-    tbody.innerHTML = '<tr><td colspan="7" class="text-center">Cargando ventas...</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="5" class="text-center">Cargando compras...</td></tr>';
     
     try {
-        // Verificar sesión nuevamente si window.isAdmin no está definido
-        if (window.isAdmin === undefined || window.isAdmin === null) {
-            console.log('⚠️ window.isAdmin no está definido, verificando sesión...');
-            try {
-                const sessionResponse = await fetch('php/check_session.php');
-                const sessionData = await sessionResponse.json();
-                window.userRole = sessionData.user_role || null;
-                window.isAdmin = (sessionData.user_role === 'admin');
-                console.log('✅ Sesión verificada en loadVentas:', { 
-                    isAdmin: window.isAdmin, 
-                    userRole: window.userRole 
-                });
-            } catch (error) {
-                console.error('❌ Error verificando sesión:', error);
-            }
-        } else {
-            console.log('✅ window.isAdmin ya está definido:', window.isAdmin);
-        }
+        // Obtener email del usuario logueado
+        const sessionResponse = await fetch('php/check_session.php');
+        const sessionData = await sessionResponse.json();
         
-        const response = await fetch('php/ventas.php');
-        const ventas = await response.json();
-        
-        tbody.innerHTML = '';
-        
-        if (ventas.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="7" class="text-center">No hay ventas registradas</td></tr>';
+        if (!sessionData.logged_in || !sessionData.user_email) {
+            tbody.innerHTML = '<tr><td colspan="5" class="text-center">Debe iniciar sesión para ver sus compras</td></tr>';
             return;
         }
         
-        // Verificar permisos de administrador - verificar múltiples formas
-        let isAdmin = false;
+        const userEmail = sessionData.user_email;
         
-        // Verificar de múltiples formas para asegurar que funcione
-        if (window.isAdmin === true) {
-            isAdmin = true;
-            console.log('✅ isAdmin detectado desde window.isAdmin');
-        } else if (window.userRole === 'admin') {
-            isAdmin = true;
-            window.isAdmin = true; // Establecer para futuras referencias
-            console.log('✅ isAdmin detectado desde window.userRole');
-        } else {
-            // Último recurso: verificar directamente desde la sesión
-            try {
-                const sessionCheck = await fetch('php/check_session.php');
-                const sessionData = await sessionCheck.json();
-                if (sessionData.user_role === 'admin') {
-                    isAdmin = true;
-                    window.isAdmin = true;
-                    window.userRole = 'admin';
-                    console.log('✅ isAdmin detectado desde verificación de sesión');
-                }
-            } catch (e) {
-                console.error('Error verificando sesión:', e);
-            }
-        }
+        // Obtener todas las ventas
+        const response = await fetch('php/ventas.php');
+        const ventas = await response.json();
         
-        console.log('🔍 Verificando permisos en loadVentas:', { 
-            isAdmin, 
-            windowIsAdmin: window.isAdmin, 
-            userRole: window.userRole,
-            windowUserRole: window.userRole
+        // Obtener clientes para filtrar
+        const clientesResponse = await fetch('php/clientes.php');
+        const clientes = await clientesResponse.json();
+        
+        // Filtrar ventas donde el cliente tiene el mismo email que el usuario
+        const comprasUsuario = ventas.filter(venta => {
+            const cliente = clientes.find(c => c.id == venta.id_cliente);
+            return cliente && cliente.correo && cliente.correo.toLowerCase() === userEmail.toLowerCase();
         });
         
-        // Crear una fila por cada venta
-        ventas.forEach(venta => {
+        tbody.innerHTML = '';
+        
+        if (comprasUsuario.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" class="text-center">No has realizado compras aún</td></tr>';
+            return;
+        }
+        
+        // Crear una fila por cada compra
+        comprasUsuario.forEach(compra => {
             const row = document.createElement('tr');
             
             // Formatear la fecha
-            const fecha = new Date(venta.fecha);
+            const fecha = new Date(compra.fecha);
             const fechaFormateada = fecha.toLocaleDateString('es-CO') + ' ' + fecha.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' });
             
             // Generar botones de acción
             let actionButtons = `
-                <button class="btn btn-sm btn-secondary" onclick="verDetalleVenta(${venta.id})" title="Ver detalles">
+                <button class="btn btn-sm btn-secondary" onclick="verDetalleCompra(${compra.id})" title="Ver detalles">
                     <i class="fas fa-eye"></i>
                 </button>
             `;
             
-            // Agregar botón de eliminar solo si es admin
-            if (isAdmin) {
-                actionButtons += `
-                    <button class="btn btn-sm btn-danger" onclick="eliminarVenta(${venta.id})" title="Eliminar venta">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                `;
-            }
-            
             row.innerHTML = `
-                <td>${venta.id}</td>
-                <td>${venta.cliente_nombre || 'Cliente desconocido'}</td>
-                <td>${venta.productos || 'Sin productos'}</td>
-                <td>${venta.total ? venta.total.split('.')[0] : '0'}</td>
-                <td>$${parseFloat(venta.total || 0).toLocaleString('es-CO')}</td>
+                <td>${compra.id}</td>
                 <td>${fechaFormateada}</td>
+                <td>${compra.productos || 'Sin productos'}</td>
+                <td>$${parseFloat(compra.total || 0).toLocaleString('es-CO')}</td>
                 <td>${actionButtons}</td>
             `;
             tbody.appendChild(row);
         });
         
     } catch (error) {
-        console.error('❌ ERROR en loadVentas():', error);
-        console.error('❌ Stack trace:', error.stack);
-        tbody.innerHTML = '<tr><td colspan="7" class="text-center">Error al cargar ventas</td></tr>';
+        console.error('❌ ERROR en loadCompras():', error);
+        tbody.innerHTML = '<tr><td colspan="5" class="text-center">Error al cargar compras</td></tr>';
     }
-    console.log('🔵 loadVentas() FINALIZADA');
 }
 
 // ============================================
-// 🛍️ GESTIÓN DEL CARRITO DE VENTA
+// 🛍️ GESTIÓN DEL CARRITO DE COMPRA
 // ============================================
 
 /**
- * Agrega un producto al carrito de la venta actual
+ * Agrega un producto al carrito de la compra actual
  * Valida stock y cantidad
  */
 function agregarProductoCarrito() {
@@ -248,7 +188,7 @@ function agregarProductoCarrito() {
     }
     
     // Verificar si el producto ya está en el carrito
-    const productoExistente = carritoVenta.find(item => item.id === productoId);
+    const productoExistente = carritoCompra.find(item => item.id === productoId);
     
     if (productoExistente) {
         // Si ya existe, actualizar cantidad
@@ -260,7 +200,7 @@ function agregarProductoCarrito() {
         productoExistente.cantidad = nuevaCantidad;
     } else {
         // Si no existe, agregarlo al carrito
-        carritoVenta.push({
+        carritoCompra.push({
             id: productoId,
             nombre: productoNombre,
             precio: productoPrecio,
@@ -273,7 +213,7 @@ function agregarProductoCarrito() {
     
     // Limpiar campos
     selectProducto.value = '';
-    inputCantidad.value = '';
+    inputCantidad.value = '1';
     
     showAlert('Producto agregado al carrito', 'success');
 }
@@ -283,13 +223,13 @@ function agregarProductoCarrito() {
  * Muestra los productos agregados y el total
  */
 function actualizarCarritoVista() {
-    const carritoContainer = document.getElementById('carritoVenta');
-    const totalElement = document.getElementById('totalVenta');
+    const carritoContainer = document.getElementById('carritoCompra');
+    const totalElement = document.getElementById('totalCompra');
     
     if (!carritoContainer) return;
     
     // Si el carrito está vacío
-    if (carritoVenta.length === 0) {
+    if (carritoCompra.length === 0) {
         carritoContainer.innerHTML = '<p class="text-center" style="color: #666;">No hay productos en el carrito</p>';
         if (totalElement) totalElement.textContent = '$0';
         return;
@@ -299,7 +239,7 @@ function actualizarCarritoVista() {
     let html = '<div class="carrito-items">';
     let total = 0;
     
-    carritoVenta.forEach((item, index) => {
+    carritoCompra.forEach((item, index) => {
         const subtotal = item.precio * item.cantidad;
         total += subtotal;
         
@@ -330,43 +270,37 @@ function actualizarCarritoVista() {
  * @param {number} index - Índice del producto en el array del carrito
  */
 function eliminarDelCarrito(index) {
-    carritoVenta.splice(index, 1);
+    carritoCompra.splice(index, 1);
     actualizarCarritoVista();
     showAlert('Producto eliminado del carrito', 'info');
 }
 
 // ============================================
-// 💾 REGISTRAR VENTA
+// 💾 REGISTRAR COMPRA
 // ============================================
 
 /**
- * Procesa y registra una nueva venta
- * Valida datos, envía al servidor y actualiza la vista
+ * Procesa y registra una nueva compra (venta)
+ * Valida datos, obtiene cliente del usuario logueado, envía al servidor y actualiza la vista
  */
-async function registrarVenta(event) {
+async function registrarCompra(event) {
     event.preventDefault();
     
-    const selectCliente = document.getElementById('cliente');
-    const clienteId = selectCliente.value;
-    
-    // Validar que se haya seleccionado un cliente
-    if (!clienteId) {
-        showAlert('Por favor seleccione un cliente', 'warning');
-        return;
-    }
-    
     // Validar que haya productos en el carrito
-    if (carritoVenta.length === 0) {
-        showAlert('Por favor agregue al menos un producto a la venta', 'warning');
+    if (carritoCompra.length === 0) {
+        showAlert('Por favor agregue al menos un producto a su compra', 'warning');
         return;
     }
-    
-    // Preparar datos para enviar
-    const formData = new FormData();
-    formData.append('cliente', clienteId);
-    formData.append('productos', JSON.stringify(carritoVenta));
     
     try {
+        // Obtener el ID del cliente asociado al usuario logueado
+        const clienteId = await obtenerClienteId();
+        
+        // Preparar datos para enviar
+        const formData = new FormData();
+        formData.append('cliente', clienteId);
+        formData.append('productos', JSON.stringify(carritoCompra));
+        
         // Enviar datos al servidor
         const response = await fetch('php/ventas.php', {
             method: 'POST',
@@ -376,61 +310,60 @@ async function registrarVenta(event) {
         const result = await response.json();
         
         if (result.success) {
-            showAlert('Venta registrada exitosamente', 'success');
+            showAlert('¡Compra realizada exitosamente!', 'success');
             
             // Limpiar formulario y carrito
-            selectCliente.value = '';
-            carritoVenta = [];
+            carritoCompra = [];
             actualizarCarritoVista();
             
             // Recargar listas
-            loadVentas();
+            loadCompras();
             loadProductos(); // Recargar para actualizar stock
             
         } else {
-            showAlert(result.message || 'Error al registrar la venta', 'danger');
+            showAlert(result.message || 'Error al realizar la compra', 'danger');
         }
         
     } catch (error) {
-        showAlert('Error al procesar la venta', 'danger');
+        showAlert('Error al procesar la compra: ' + error.message, 'danger');
         console.error('Error:', error);
     }
 }
 
 // ============================================
-// 👁️ VER DETALLES DE VENTA
+// 👁️ VER DETALLES DE COMPRA
 // ============================================
 
 /**
- * Muestra los detalles completos de una venta en un modal
- * @param {number} ventaId - ID de la venta a mostrar
+ * Muestra los detalles completos de una compra en un modal
+ * @param {number} compraId - ID de la compra (venta) a mostrar
  */
-async function verDetalleVenta(ventaId) {
+async function verDetalleCompra(compraId) {
     try {
         const response = await fetch('php/ventas.php');
         const ventas = await response.json();
         
-        const venta = ventas.find(v => v.id == ventaId);
+        const compra = ventas.find(v => v.id == compraId);
         
-        if (!venta) {
-            showAlert('Venta no encontrada', 'danger');
+        if (!compra) {
+            showAlert('Compra no encontrada', 'danger');
             return;
         }
         
         // Crear modal de detalles
-        mostrarModalFactura(venta);
+        mostrarModalFactura(compra);
         
     } catch (error) {
-        showAlert('Error al cargar los detalles de la venta', 'danger');
+        showAlert('Error al cargar los detalles de la compra', 'danger');
         console.error('Error:', error);
     }
 }
 
 /**
- * Muestra un modal con la factura de la venta
- * @param {Object} venta - Objeto con datos de la venta
+ * Muestra un modal con la factura de la compra
+ * @param {Object} compra - Objeto con datos de la compra (venta)
  */
-function mostrarModalFactura(venta) {
+function mostrarModalFactura(compra) {
     // Crear el modal si no existe
     let modal = document.getElementById('modalFactura');
     if (!modal) {
@@ -441,14 +374,14 @@ function mostrarModalFactura(venta) {
     }
     
     // Formatear fecha
-    const fecha = new Date(venta.fecha);
+    const fecha = new Date(compra.fecha);
     const fechaFormateada = fecha.toLocaleDateString('es-CO') + ' ' + fecha.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' });
     
     // Contenido de la factura
     modal.innerHTML = `
         <div class="modal-content" style="max-width: 800px;">
             <div class="modal-header">
-                <h2><i class="fas fa-file-invoice"></i> Factura de Venta #${venta.id}</h2>
+                <h2><i class="fas fa-file-invoice"></i> Factura de Compra #${compra.id}</h2>
                 <span class="modal-close" onclick="cerrarModalFactura()">&times;</span>
             </div>
             <div class="modal-body" id="facturaContenido">
@@ -465,13 +398,13 @@ function mostrarModalFactura(venta) {
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
                     <div>
                         <h3 style="color: var(--primary-green); margin-bottom: 10px;">Información del Cliente</h3>
-                        <p><strong>Cliente:</strong> ${venta.cliente_nombre || 'No especificado'}</p>
+                        <p><strong>Cliente:</strong> ${compra.cliente_nombre || 'No especificado'}</p>
                         <p><strong>Fecha:</strong> ${fechaFormateada}</p>
                     </div>
                     <div style="text-align: right;">
-                        <h3 style="color: var(--primary-green); margin-bottom: 10px;">Detalles de la Venta</h3>
-                        <p><strong>Factura #:</strong> ${venta.id}</p>
-                        <p><strong>Productos:</strong> ${venta.productos || 'N/A'}</p>
+                        <h3 style="color: var(--primary-green); margin-bottom: 10px;">Detalles de la Compra</h3>
+                        <p><strong>Factura #:</strong> ${compra.id}</p>
+                        <p><strong>Productos:</strong> ${compra.productos || 'N/A'}</p>
                     </div>
                 </div>
                 
@@ -480,14 +413,14 @@ function mostrarModalFactura(venta) {
                 <div style="margin-bottom: 20px;">
                     <h3 style="color: var(--primary-green); margin-bottom: 15px;">Productos</h3>
                     <div style="background: #f9f9f9; padding: 15px; border-radius: 8px;">
-                        ${venta.productos || 'Sin detalles de productos'}
+                        ${compra.productos || 'Sin detalles de productos'}
                     </div>
                 </div>
                 
                 <hr style="border: 1px solid #ddd; margin: 20px 0;">
                 
                 <div style="text-align: right; font-size: 1.2rem;">
-                    <p style="margin: 10px 0;"><strong>Total: </strong> <span style="font-size: 1.5rem; color: var(--primary-green);">$${parseFloat(venta.total || 0).toLocaleString('es-CO')}</span></p>
+                    <p style="margin: 10px 0;"><strong>Total: </strong> <span style="font-size: 1.5rem; color: var(--primary-green);">$${parseFloat(compra.total || 0).toLocaleString('es-CO')}</span></p>
                 </div>
                 
                 <hr style="border: 1px solid #ddd; margin: 20px 0;">
@@ -517,57 +450,6 @@ function cerrarModalFactura() {
     const modal = document.getElementById('modalFactura');
     if (modal) {
         modal.style.display = 'none';
-    }
-}
-
-// ============================================
-// 🗑️ ELIMINAR VENTA
-// ============================================
-
-/**
- * Elimina una venta y restaura el stock de los productos
- * @param {number} ventaId - ID de la venta a eliminar
- */
-async function eliminarVenta(ventaId) {
-    if (!confirm('¿Estás seguro de que quieres eliminar esta venta?\n\nEsta acción restaurará el stock de los productos vendidos.')) {
-        return;
-    }
-    
-    try {
-        const response = await fetch('php/ventas.php', {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: `id=${ventaId}`
-        });
-        
-        // Verificar si la respuesta es válida
-        if (!response.ok) {
-            throw new Error(`Error HTTP: ${response.status}`);
-        }
-        
-        // Intentar parsear la respuesta como JSON
-        let result;
-        const text = await response.text();
-        try {
-            result = JSON.parse(text);
-        } catch (parseError) {
-            console.error('Error al parsear respuesta:', text);
-            throw new Error('Respuesta inválida del servidor');
-        }
-        
-        if (result.success) {
-            showAlert(result.message || 'Venta eliminada exitosamente', 'success');
-            loadVentas(); // Recargar la lista de ventas
-            loadProductos(); // Recargar productos para actualizar stock
-        } else {
-            showAlert(result.message || 'Error al eliminar venta', 'danger');
-            console.error('Error del servidor:', result);
-        }
-    } catch (error) {
-        showAlert('Error al eliminar venta: ' + error.message, 'danger');
-        console.error('Error completo:', error);
     }
 }
 
@@ -636,16 +518,14 @@ function imprimirFactura() {
 // ============================================
 
 /**
- * Inicializa el módulo de ventas al cargar la página
+ * Inicializa el módulo de compras al cargar la página
  * Carga datos y configura event listeners
- * NOTA: loadVentas(), loadClientes() y loadProductos() se llaman desde ventas.html
- * después de updateSessionUI() para asegurar que window.isAdmin esté establecido
  */
 document.addEventListener('DOMContentLoaded', function() {
-    // Manejar el formulario de venta
-    const ventaForm = document.getElementById('ventaForm');
-    if (ventaForm) {
-        ventaForm.addEventListener('submit', registrarVenta);
+    // Manejar el formulario de compra
+    const compraForm = document.getElementById('compraForm');
+    if (compraForm) {
+        compraForm.addEventListener('submit', registrarCompra);
     }
     
     // Botón para agregar producto al carrito
@@ -654,4 +534,5 @@ document.addEventListener('DOMContentLoaded', function() {
         btnAgregarProducto.addEventListener('click', agregarProductoCarrito);
     }
 });
+
 
