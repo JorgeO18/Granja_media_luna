@@ -189,11 +189,25 @@ async function loadVentas() {
                 `;
             }
             
+            // Calcular cantidad total de productos (sumar todas las cantidades de los productos)
+            // Los productos vienen como string concatenado, necesitamos extraer las cantidades
+            let cantidadTotal = 0;
+            if (venta.productos) {
+                // Extraer números entre paréntesis que representan cantidades
+                const matches = venta.productos.match(/\((\d+)\)/g);
+                if (matches) {
+                    cantidadTotal = matches.reduce((sum, match) => {
+                        const cantidad = parseInt(match.replace(/[()]/g, ''));
+                        return sum + (isNaN(cantidad) ? 0 : cantidad);
+                    }, 0);
+                }
+            }
+            
             row.innerHTML = `
                 <td>${venta.id}</td>
                 <td>${venta.cliente_nombre || 'Cliente desconocido'}</td>
                 <td>${venta.productos || 'Sin productos'}</td>
-                <td>${venta.total ? venta.total.split('.')[0] : '0'}</td>
+                <td>${cantidadTotal}</td>
                 <td>$${parseFloat(venta.total || 0).toLocaleString('es-CO')}</td>
                 <td>${fechaFormateada}</td>
                 <td>${actionButtons}</td>

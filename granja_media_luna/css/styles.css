@@ -6,6 +6,14 @@
     padding: 0;
     box-sizing: border-box;
 }
+.nav-logo img.logo-img {
+    height: 90px; /* Ajusta según el tamaño de tu logo */
+    width: auto;
+    object-fit: contain;
+    border-radius: 50%;
+    object-fit: cover;
+    
+}
 
 :root {
     /* Colores del tema agrícola */
@@ -367,12 +375,12 @@ body {
 .product-card h3 {
     font-size: var(--font-size-xl);
     font-weight: 600;
-    color: var(--primary-green);
+    color: var(--primary-white);
     margin-bottom: var(--spacing-md);
 }
 
 .product-card p {
-    color: var(--gray);
+    color: var(--white);
     margin-bottom: var(--spacing-md);
     line-height: 1.6;
 }

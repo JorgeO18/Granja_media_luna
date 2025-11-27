@@ -79,7 +79,7 @@ async function loadCompras() {
     const tbody = document.querySelector('#comprasTable tbody');
     
     if (!tbody) {
-        console.error('❌ No se encontró #comprasTable tbody');
+        console.error(' No se encontró #comprasTable tbody');
         return;
     }
     
@@ -144,7 +144,7 @@ async function loadCompras() {
         });
         
     } catch (error) {
-        console.error('❌ ERROR en loadCompras():', error);
+        console.error(' ERROR en loadCompras():', error);
         tbody.innerHTML = '<tr><td colspan="5" class="text-center">Error al cargar compras</td></tr>';
     }
 }
